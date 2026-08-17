@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>기능분석(FAST)</title>
+<style>
+  :root{
+    color-scheme: light;
+    --plane:#f9f9f7; --surface-1:#fcfcfb;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300;
+    --seq-100:#cde2fb; --seq-200:#9ec5f4; --seq-300:#6da7ec; --seq-400:#3987e5; --seq-500:#256abf; --seq-600:#184f95; --seq-700:#0d366b;
+    --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+    --chip:#f0efec; --wash:#f4f3f0;
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --plane:#0d0d0d; --surface-1:#1a1a19;
+    --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300;
+    --seq-100:#184f95; --seq-200:#256abf; --seq-300:#2a78d6; --seq-400:#3987e5; --seq-500:#6da7ec; --seq-600:#9ec5f4; --seq-700:#cde2fb;
+    --chip:#262624; --wash:#232321;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--plane); color:var(--text-primary);
+    font-family:system-ui,-apple-system,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+    font-size:14px; line-height:1.65;
+  }
+  .wrap{max-width:1220px; margin:0 auto; padding:32px 24px 96px}
+  header.top{display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap; margin-bottom:8px}
+  h1{font-size:26px; line-height:1.3; margin:0 0 6px; letter-spacing:-0.01em}
+  .sub{color:var(--text-secondary); font-size:14px; margin:0}
+  .meta{color:var(--muted); font-size:12px; margin-top:8px}
+  button.toggle{
+    background:var(--surface-1); color:var(--text-secondary); border:1px solid var(--border);
+    border-radius:999px; padding:7px 14px; font-size:12px; cursor:pointer; font-family:inherit;
+  }
+  button.toggle:hover{color:var(--text-primary)}
+  section{margin-top:44px}
+  h2{font-size:18px; margin:0 0 6px; letter-spacing:-0.01em}
+  h2 .num{color:var(--muted); font-weight:600; margin-right:8px; font-variant-numeric:tabular-nums}
+  h3{font-size:14px; margin:0 0 8px}
+  .lead{color:var(--text-secondary); margin:0 0 18px; max-width:940px}
+  .card{background:var(--surface-1); border:1px solid var(--border); border-radius:14px; padding:20px 22px; margin-bottom:16px}
+  .grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:16px}
+  .grid3{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px}
+  .tile .label{font-size:12px; color:var(--muted); letter-spacing:.02em}
+  .tile .val{font-size:32px; font-weight:650; letter-spacing:-0.02em; margin-top:2px}
+  .tile .note{font-size:12px; color:var(--text-secondary); margin-top:2px}
+
+  table{width:100%; border-collapse:collapse; font-size:13px}
+  th{text-align:left; font-weight:600; color:var(--text-secondary); font-size:12px;
+     border-bottom:1px solid var(--axis); padding:9px 10px; white-space:nowrap; vertical-align:bottom;}
+  td{border-bottom:1px solid var(--grid); padding:9px 10px; vertical-align:top}
+  tbody tr:hover{background:var(--chip)}
+  td.id{font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; color:var(--text-secondary)}
+  td.num{font-variant-numeric:tabular-nums; text-align:center; white-space:nowrap}
+  .tech{color:var(--text-secondary); font-size:12.5px}
+  .scroll{overflow-x:auto}
+  caption{caption-side:bottom; text-align:left; color:var(--muted); font-size:12px; padding-top:10px}
+
+  .chip{display:inline-block; padding:1px 8px; border-radius:999px; font-size:11.5px; background:var(--chip); color:var(--text-secondary); white-space:nowrap}
+  .chip.new{background:transparent; border:1px solid var(--s3); color:var(--s3); font-weight:600}
+  .ph1{color:var(--s1)} .ph2{color:var(--s2)} .ph3{color:var(--s3)} .ph4{color:var(--s4)}
+  .tierBadge{display:inline-block; padding:1px 7px; border-radius:5px; font-size:11px; font-weight:600; white-space:nowrap; color:#fff}
+
+  /* flow */
+  .flow{display:grid; gap:0 34px; position:relative}
+  .flowCol{display:flex; flex-direction:column; gap:9px}
+  .flowHead{font-size:12px; font-weight:650; padding:7px 11px; border-radius:8px; margin-bottom:3px}
+  .step{border:1px solid var(--border); border-radius:9px; padding:8px 11px; font-size:12.5px; background:var(--surface-1); line-height:1.45}
+  .step .sid, .gate .sid{font-size:10.5px; color:var(--muted); font-weight:600; display:block; margin-bottom:1px}
+  .step.hi{background:var(--wash)}
+  .arrowRow{text-align:center; color:var(--muted); font-size:13px; line-height:1}
+  .gate{border:1px dashed var(--axis); border-radius:9px; padding:9px 11px; font-size:12.5px; background:var(--wash)}
+  .stepNote{font-size:11.5px; color:var(--text-secondary)}
+  .loopNote{margin-top:14px; padding:10px 13px; border-left:3px solid var(--s3); background:var(--wash); border-radius:0 8px 8px 0; font-size:12.5px; color:var(--text-secondary)}
+
+  /* FAST */
+  .fastHead{font-size:11.5px; color:var(--muted); letter-spacing:.04em; padding-bottom:8px; border-bottom:1px solid var(--grid); margin-bottom:12px}
+  .fast{display:grid; grid-template-columns:168px 206px 226px 1fr; gap:0 18px}
+  .node{border:1px solid var(--border); border-radius:10px; padding:9px 11px; background:var(--surface-1); font-size:12.5px; line-height:1.45}
+  .node .nid{font-size:10.5px; color:var(--muted); font-weight:600; letter-spacing:.03em; display:block}
+  .node.task{border-left:3px solid var(--muted)}
+  .node.basic{border-left:3px solid var(--text-secondary); font-weight:600}
+  .node.core{border-left:3px solid currentColor; font-weight:600; width:100%}
+  .node.leaf{border-left:2px solid var(--grid); font-size:12px}
+  .node.leaf.key{border-left:2px solid var(--s3)}
+  .leafGrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px}
+  .bandRow{display:grid; grid-template-columns:168px 206px 226px 1fr; gap:0 18px; padding:14px 0; border-bottom:1px dashed var(--grid); align-items:center}
+  .bandRow:last-child{border-bottom:none}
+  .spanCell{display:flex; align-items:center}
+  .dirBar{display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); margin:2px 0 14px; letter-spacing:.03em}
+
+  /* charts */
+  .chartHead{display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:2px}
+  .chartTitle{font-size:14.5px; font-weight:650}
+  .chartSub{font-size:12px; color:var(--muted)}
+  .legend{display:flex; gap:14px; flex-wrap:wrap; margin:10px 0 4px}
+  .legend span{display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary)}
+  .legend i{width:10px; height:10px; border-radius:3px; display:inline-block}
+  svg{display:block; width:100%; height:auto; overflow:visible}
+  .tick{fill:var(--muted); font-size:11px}
+  .lbl{fill:var(--text-secondary); font-size:11.5px}
+  .lblStrong{fill:var(--text-primary); font-size:11.5px; font-weight:600}
+  .gridline{stroke:var(--grid); stroke-width:1}
+  .axisline{stroke:var(--axis); stroke-width:1}
+  .mark{cursor:pointer}
+  .mark:hover{filter:brightness(1.08)}
+  #tip{position:fixed; pointer-events:none; opacity:0; transition:opacity .1s;
+    background:var(--surface-1); border:1px solid var(--border); border-radius:9px;
+    padding:8px 11px; font-size:12px; color:var(--text-primary); z-index:50;
+    box-shadow:0 6px 22px rgba(0,0,0,.14); max-width:290px; line-height:1.5;}
+  #tip b{font-weight:650}
+  #tip .t2{color:var(--text-secondary); font-size:11.5px}
+
+  .note{font-size:12.5px; color:var(--text-secondary)}
+  ul.tight{margin:8px 0 0; padding-left:18px}
+  ul.tight li{margin-bottom:6px; color:var(--text-secondary); font-size:13px}
+  .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11.5px; background:var(--chip); padding:1px 5px; border-radius:4px}
+  .filterRow{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px}
+  .filterRow button{font-family:inherit; font-size:12px; padding:5px 12px; border-radius:999px; cursor:pointer;
+    border:1px solid var(--border); background:transparent; color:var(--text-secondary);}
+  .filterRow button[aria-pressed="true"]{background:var(--text-primary); color:var(--surface-1); border-color:var(--text-primary)}
+  .expandRow{margin:-6px 0 14px}
+  .expandBtn{font-family:inherit; background:none; border:none; cursor:pointer; color:var(--muted); font-size:11px;
+    padding:0 6px 0 0; vertical-align:middle; line-height:1}
+  .expandBtn:hover{color:var(--text-primary)}
+  tr.detailRow td{background:var(--wash); padding:11px 14px 13px 30px; border-bottom:1px solid var(--grid)}
+  .subsubWrap{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:7px 16px}
+  .subsubItem{font-size:12px; color:var(--text-secondary); line-height:1.5}
+  .subsubItem .ssid{font-variant-numeric:tabular-nums; font-weight:600; color:var(--text-primary); margin-right:6px}
+  .footer{margin-top:56px; padding-top:18px; border-top:1px solid var(--grid); color:var(--muted); font-size:12px}
+  .callout{border-left:3px solid var(--critical); background:var(--wash); border-radius:0 8px 8px 0; padding:12px 15px; margin-top:12px}
+  .callout b{color:var(--text-primary)}
+</style>
+</head>
+<body>
+<div id="tip"></div>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 id="hTitle"></h1>
+      <p class="sub" id="hSub"></p>
+      <p class="meta" id="hMeta"></p>
+    </div>
+    <button class="toggle" onclick="tg()">라이트 / 다크</button>
+  </header>
+  <div id="app"></div>
+  <div class="footer" id="hFoot"></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   DATA — 이 블록만 교체하면 된다. 아래 ENGINE 영역은 손대지 않는다.
+   각 필드의 의미와 작성 규칙은 SKILL.md 및 references/ 참조.
+   ═══════════════════════════════════════════════════════════════════ */
+
+const META = {
+  title: "제품명<br>기능분석(FAST) — Rev 0.1",
+  subtitle: '해결방안: <b>한 줄 요약</b> — 이 솔루션이 채택한 접근의 핵심',
+  meta: ["Rev 0.1 · 2026-01-01 · 초안", "보완사항이 있으면 두 번째 줄에"],
+  footer: "제품명 · 기능분석(FAST) Rev 0.1 · 본 문서의 수치는 검증 전 추정치임",
+
+  task: "브랜드 혼재 설비의 <b>비계획 정지 손실을 최소화</b>한다",
+  taskPurpose: "상위목적: 생산성·설비 신뢰성 향상",
+  basicFunctionShort: "1차 대응자가 스스로 처리할 <b>범위를 최대화</b>하고,<br>넘는 문제는 <b>준비된 상태로 인계</b>한다",
+
+  /* §0 해결방안의 정의 */
+  s0Lead: '이 솔루션이 파는 것은 무엇인가 — 표면적 기능이 아니라 <b>진짜 가치</b>를 한 문단으로.',
+  basicFunction: "1차 대응자(오퍼레이터)가 스스로 처리할 수 있는 범위를 최대화하고,<br>그 범위를 넘는 문제는 전문가에게 <span style=\"color:var(--s1)\">준비된 상태로</span> 인계한다",
+  basicFunctionNote: '기본기능의 핵심 용어를 여기서 정의한다 — 모호한 말이 남으면 이후 모든 기능이 흔들린다.',
+  tiles: [
+    {label:"핵심기능 (2차)", val:"auto:core", note:"핵심기능 약칭 나열"},
+    {label:"세부기능 (3차)", val:"auto:sub", note:"Kano / QFD 분석 단위"},
+    {label:"세세부기능 (4차)", val:"auto:subsub", note:"개발 태스크 분해 단위"}
+  ],
+  constraintsTitle: "설계 제약(Constraint) — 기능이 아니지만 모든 기능을 구속하는 조건",
+  constraints: [
+    "<b>제약 이름</b> — 왜 이것이 모든 기능을 구속하는지."
+  ],
+
+  /* §1 시나리오 흐름 */
+  s1Title: "대응 시나리오 — 핵심 흐름",
+  s1Lead: '이 흐름도가 곧 제품의 정의다. 기능분석의 모든 항목은 이 흐름 위의 어느 한 지점을 담당한다.',
+
+  /* §2 FAST */
+  s2Lead: '왼쪽→오른쪽으로 읽으면 <b>어떻게(HOW)</b>, 오른쪽→왼쪽으로 읽으면 <b>왜(WHY)</b>가 성립한다.',
+  /* §3 */
+  s3Lead: '핵심기능 6개의 정의와 담당 범위.',
+  /* §4 */
+  s4Lead: 'QFD 품질의 집 <b>상단 축(기술특성/HOWs)</b>으로 그대로 이관할 수 있는 형태다.',
+  /* §5 */
+  s5Lead: '모든 수치는 현 시점의 <b>엔지니어링 추정치</b>이며 실측·설문으로 갱신되어야 한다.',
+  /* §6 */
+  s6Lead: '고객 요구를 기능으로 잇는 축.',
+  /* §7 */
+  s7Lead: ''
+};
+
+/* 핵심기능 (2차). slot 1~6 → 색상 --s1~--s6.
+   scores: 5.5 핵심기능 평가 매트릭스의 축. 축 이름은 자유롭게 바꿔도 되지만 모든 항목이 동일해야 한다. */
+const CORE = [
+  {id:"F1", sh:"수집", name:"신호를 수집한다", en:"Data Acquisition",
+   def:"이기종 설비로부터 상태를 실시간·무침습으로 취득해 공통 형식으로 정규화한다",
+   req:"1항 (실시간 모니터링)", slot:1,
+   scores:{"고객가치":5,"차별성":4,"난이도":4,"투자비용":3,"데이터의존":2}}
+];
+
+/* 세부기능 (3차)
+   [id, 기능(동사+명사), 정의, 적용기술, TRL(1-9), 난이도(1-5), 가치(1-5), 단계, Kano가설, Phase, 신규여부(0/1)] */
+const SUB = [
+  ["F1.1","이기종 설비와 통신한다","브랜드별 프로토콜로 내부 값을 주기 취득한다",
+   "프로토콜 A, 프로토콜 B, 프로토콜 C",8,4,5,"시험","Must-be",1,0]
+].map(r=>({id:r[0],core:r[0].split(".")[0],name:r[1],def:r[2],tech:r[3],trl:r[4],diff:r[5],val:r[6],stage:r[7],kano:r[8],phase:r[9],isNew:r[10]}));
+
+/* 세세부기능 (4차) — [부모 세부기능ID, 세세부기능ID, 실행 태스크] */
+const SUBSUB = [
+  ["F1.1","F1.1.1","프로토콜 드라이버 구현"]
+].map(r=>({parent:r[0],id:r[1],name:r[2]}));
+
+/* §1 흐름도. tone: neutral | primary | accent
+   steps[].kind: step | hi | gate   ·  steps[].accent: s1|s2|s3|warning|critical (선택) */
+const FLOW = {
+  enable: true,
+  columns: [
+    {head:"① 감지 · 판별", tone:"neutral", steps:[
+      {sid:"F1", text:"신호를 실시간 수집"},
+      {sid:"F2.7 · 분기점", kind:"gate", text:"<b>대응 주체를 판별한다</b>", note:"L1 자율 / L3 전문가"}
+    ]},
+    {head:"② Tier-1 · 자율 대응", tone:"primary", steps:[
+      {sid:"F3.2 · 핵심", kind:"hi", accent:"s1", text:"<b>자연어로 묻고 답한다</b>", note:"근거 제시"}
+    ]},
+    {head:"③ Tier-2 · 전문가", tone:"accent", steps:[
+      {sid:"F4.1", text:"전문가를 호출"}
+    ]}
+  ],
+  loopNote: '<b>학습 루프</b> — 이 루프가 작동하지 않으면 솔루션은 단순 알림 시스템으로 퇴화한다.',
+  gradeTable: {
+    enable:true,
+    title:"대응등급 체계 (판별 기준) — 초안",
+    head:["등급","대응 주체","해당 상황 예시","시스템이 제공하는 것","목표 대응시간"],
+    rows:[
+      [{badge:"L1", color:"var(--s1)"},"<b>자율 대응</b>","리셋 가능 알람","단계별 안내",{num:"5분 이내"}]
+    ],
+    caption:"이 등급표는 QFD에서 <b>기술특성 목표치</b>의 근거가 된다."
+  },
+  callout: {
+    title:"이 모델의 최대 리스크",
+    body:"무엇이 잘못되면 이 설계 전체가 무너지는가를 여기 적는다."
+  }
+};
+
+/* How-Why 논리 검증 [WHY, 기능, HOW] */
+const LOGIC = [
+  ["상위 목적","<b>과업</b>","달성 경로"]
+];
+
+/* §5.1 대표 KPI. v:null 이면 '측정되지 않음'으로 표시된다(베이스라인 미측정 표기용). */
+const KPI = {
+  title: "5.1 대표 KPI 목표",
+  sub: "본 솔루션의 대표 지표 · 단위 %",
+  axisLabel: "지표의 조작적 정의를 한 줄로",
+  max: 100,
+  rows: [
+    {label:"현행 (베이스라인)", note:"실측 필요", v:null},
+    {label:"Phase 1 목표", note:"한정 범위", v:35}
+  ],
+  note: '<b>정의</b> — 지표의 계산식. <b>주의</b> — 베이스라인 실측이 선행되지 않으면 검증 불가능한 약속이 된다.'
+};
+
+const PHASES = [
+  {n:1, name:"Phase 1 · 시험(PoC)", term:"0–6개월", goal:"<b>검증 질문: 무엇이 성립해야 다음으로 가는가?</b>"}
+];
+
+const VOC = [
+  ["V01","오퍼레이터","고객이 실제로 한 말 그대로","환산된 요구품질","F3.1, F3.2"]
+];
+
+const QFD = {
+  enable: true,
+  axisTitle: "QFD 품질의 집 — 축 구성(안)",
+  axes: [
+    ["<b>좌측 (WHATs)</b>","VOC 항목 — 요구 주체 계층별 가중치 분리"],
+    ["<b>상단 (HOWs)</b>","§4의 세부기능. 열이 과다하면 1차 HoQ는 핵심기능으로 돌리고 2차에서 세부 전개"],
+    ["<b>관계 매트릭스</b>","◎ 9 / ○ 3 / △ 1"],
+    ["<b>지붕 (상관)</b>","주요 상충 관계를 여기 적는다"],
+    ["<b>우측</b>","경쟁 비교 대상"],
+    ["<b>하단</b>","기술특성 목표치"]
+  ],
+  kanoTitle: "Kano 설문 설계 지침",
+  kanoGuide: [
+    "<b>응답자 계층</b> — 계층별 표본 수와, 계층 간 분류가 갈리는 기능이 무엇을 뜻하는지."
+  ],
+  vocCaption: "VOC는 현장 인터뷰 전 가안이다."
+};
+
+const RISKS = {
+  title: "채택에 따라 새로 생긴 리스크",
+  rows: [
+    ["<b>리스크명</b>","무엇이 잘못될 수 있는가","완화 기능·설계","남는 리스크"]
+  ]
+};
+
+const NEXT = {
+  title: "다음 단계",
+  items: ["<b>① 첫 번째 할 일</b> — 왜 이것이 먼저인가."]
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   ENGINE — 아래는 수정하지 않는다.
+   ═══════════════════════════════════════════════════════════════════ */
+const $=s=>document.querySelector(s);
+const cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tip=$("#tip");
+const SLOT=i=>"--s"+(((i-1)%6)+1);
+function showTip(e,html){tip.innerHTML=html;tip.style.opacity=1;moveTip(e);}
+function moveTip(e){const r=tip.getBoundingClientRect();let x=e.clientX+14,y=e.clientY+14;
+  if(x+r.width>innerWidth-8)x=e.clientX-r.width-14; if(y+r.height>innerHeight-8)y=e.clientY-r.height-14;
+  tip.style.left=x+"px";tip.style.top=y+"px";}
+function hideTip(){tip.style.opacity=0;}
+function el(t,a={},kids=[]){const n=document.createElementNS("http://www.w3.org/2000/svg",t);
+  for(const k in a)n.setAttribute(k,a[k]); kids.forEach(c=>n.appendChild(c)); return n;}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+const KANO=["Must-be","One-dimensional","Attractive","Indifferent"];
+const KC=["--s1","--s2","--s3","--s4"];
+const kidsOf=id=>SUBSUB.filter(x=>x.parent===id);
+const subsOf=id=>SUB.filter(s=>s.core===id);
+function niceMax(v,step){return Math.max(step,Math.ceil(v/step)*step);}
+function mk(x,y,w,h,fill,html,r=4){
+  h=Math.max(h,0); w=Math.max(w,0);
+  const g=el("g",{class:"mark"});
+  g.appendChild(el("rect",{x,y,width:w,height:h,fill,rx:r,ry:r}));
+  g.addEventListener("mouseenter",e=>showTip(e,html));
+  g.addEventListener("mousemove",moveTip); g.addEventListener("mouseleave",hideTip);
+  return g;
+}
+
+/* ---------- header + shell ---------- */
+function shell(){
+  $("#hTitle").innerHTML=META.title;
+  $("#hSub").innerHTML=META.subtitle;
+  $("#hMeta").innerHTML=(META.meta||[]).join("<br>");
+  $("#hFoot").textContent=META.footer||"";
+
+  const tiles=(META.tiles||[]).map(t=>{
+    let v=t.val;
+    if(v==="auto:core")v=CORE.length; else if(v==="auto:sub")v=SUB.length; else if(v==="auto:subsub")v=SUBSUB.length;
+    return `<div class="card tile"><div class="label">${t.label}</div><div class="val">${v}</div><div class="note">${t.note||""}</div></div>`;
+  }).join("");
+
+  $("#app").innerHTML=`
+<section>
+  <h2><span class="num">0</span>해결방안의 정의</h2>
+  <p class="lead">${META.s0Lead||""}</p>
+  <div class="card" style="border-left:3px solid var(--s1)">
+    <div style="font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.03em">기본기능 (BASIC FUNCTION)</div>
+    <div style="font-size:17px;font-weight:650;margin:4px 0 6px;line-height:1.45">${META.basicFunction}</div>
+    <div class="note">${META.basicFunctionNote||""}</div>
+  </div>
+  <div class="grid3">${tiles}</div>
+  ${(META.constraints&&META.constraints.length)?`<div class="card"><h3>${META.constraintsTitle||"설계 제약"}</h3>
+    <ul class="tight">${META.constraints.map(c=>`<li>${c}</li>`).join("")}</ul></div>`:""}
+</section>
+
+${FLOW.enable?`<section>
+  <h2><span class="num">1</span>${META.s1Title||"대응 시나리오"}</h2>
+  <p class="lead">${META.s1Lead||""}</p>
+  <div class="card"><div class="flow" id="flowBody"></div>
+    ${FLOW.loopNote?`<div class="loopNote">${FLOW.loopNote}</div>`:""}</div>
+  ${(FLOW.gradeTable&&FLOW.gradeTable.enable)?`<div class="card scroll">
+      <h3>${FLOW.gradeTable.title||""}</h3><table id="gradeTbl"></table>
+      ${FLOW.gradeTable.caption?`<caption>${FLOW.gradeTable.caption}</caption>`:""}</div>`:""}
+  ${FLOW.callout?`<div class="callout"><b>${FLOW.callout.title}</b><br><span class="note">${FLOW.callout.body}</span></div>`:""}
+</section>`:""}
+
+<section>
+  <h2><span class="num">2</span>FAST 다이어그램 (기능 논리도)</h2>
+  <p class="lead">${META.s2Lead||""}</p>
+  <div class="card">
+    <div class="dirBar"><span>◀ WHY (상위 목적)</span><span>HOW (구현 수단) ▶</span></div>
+    <div class="fast" style="margin-bottom:6px">
+      <div class="fastHead">과업 / 상위목적</div><div class="fastHead">기본기능 (1차)</div>
+      <div class="fastHead">핵심기능 (2차)</div><div class="fastHead">세부기능 (3차)</div>
+    </div>
+    <div id="fastBody"></div>
+  </div>
+  ${LOGIC.length?`<div class="card scroll"><h3>경로 검증 (How–Why Logic Check)</h3>
+    <table style="margin-top:10px">
+      <thead><tr><th style="width:34%">WHY (왜 이 기능이 필요한가)</th><th style="width:33%">기능</th><th style="width:33%">HOW (어떻게 달성하는가)</th></tr></thead>
+      <tbody id="logicTbl"></tbody></table></div>`:""}
+</section>
+
+<section>
+  <h2><span class="num">3</span>핵심기능 요약</h2>
+  <p class="lead">${META.s3Lead||""}</p>
+  <div class="scroll card"><table>
+    <thead><tr><th style="width:10%">ID</th><th style="width:18%">핵심기능</th><th style="width:26%">기능 정의</th>
+      <th style="width:18%">정의서 대응항목</th><th style="width:7%">세부<br>기능</th><th style="width:7%">세세부<br>기능</th><th style="width:6%">평균<br>TRL</th></tr></thead>
+    <tbody id="coreTbl"></tbody></table></div>
+</section>
+
+<section>
+  <h2><span class="num">4</span>세부기능 × 적용기술 매핑</h2>
+  <p class="lead">${META.s4Lead||""}</p>
+  <div class="filterRow" id="filters"></div>
+  <div class="expandRow"><button class="toggle" id="expandAllBtn" type="button">전체 펼치기</button></div>
+  <div class="scroll card"><table>
+    <thead><tr><th style="width:6%">ID</th><th style="width:17%">세부기능</th><th style="width:21%">기능 정의</th>
+      <th style="width:29%">적용기술</th><th style="width:5%">TRL</th><th style="width:5%">난이도</th><th style="width:5%">가치</th><th style="width:12%">적용단계</th></tr></thead>
+    <tbody id="subTbl"></tbody></table>
+    <caption>TRL: 1–3 개념/연구, 4–6 시작품 검증, 7–9 실환경 검증·상용. 난이도·가치: 1(낮음)–5(높음).
+      가치는 엔지니어링 추정치(가설) — Kano 설문으로 검증 대상. 행을 펼치면 4차 세세부기능이 나타난다.</caption></div>
+</section>
+
+<section>
+  <h2><span class="num">5</span>정량 분석</h2>
+  <p class="lead">${META.s5Lead||""}</p>
+  ${KPI?`<div class="card">
+    <div class="chartHead"><span class="chartTitle">${KPI.title}</span><span class="chartSub">${KPI.sub||""}</span></div>
+    <svg id="c0" viewBox="0 0 1120 250" role="img" aria-label="대표 KPI 목표 막대그래프"></svg>
+    <p class="note" style="margin:10px 0 0">${KPI.note||""}</p></div>`:""}
+  <div class="grid2">
+    <div class="card">
+      <div class="chartHead"><span class="chartTitle">5.2 핵심기능별 세부기능 구성</span><span class="chartSub">단위: 개</span></div>
+      <div class="legend" id="lg1"></div>
+      <svg id="c1" viewBox="0 0 560 300" role="img" aria-label="핵심기능별 세부기능 수 누적 막대그래프"></svg>
+    </div>
+    <div class="card">
+      <div class="chartHead"><span class="chartTitle">5.3 Kano 예상 분류 프리뷰</span><span class="chartSub">가설 — 설문으로 검증</span></div>
+      <div class="legend">${KANO.map((k,i)=>`<span><i style="background:var(${KC[i]})"></i>${k}</span>`).join("")}</div>
+      <svg id="c2" viewBox="0 0 560 300" role="img" aria-label="핵심기능별 Kano 예상 분류 누적 막대그래프"></svg>
+    </div>
+  </div>
+  <div class="card">
+    <div class="chartHead"><span class="chartTitle">5.4 기능 포트폴리오 — 구현난이도 × 체감가치</span>
+      <span class="chartSub">${SUB.length}개 세부기능 · 사분면은 개발 착수 우선순위</span></div>
+    <svg id="c3" viewBox="0 0 1120 500" role="img" aria-label="세부기능 난이도-가치 산점도"></svg>
+    <p class="note" style="margin:10px 0 0" id="portNote"></p>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chartHead"><span class="chartTitle">5.5 핵심기능 평가 매트릭스</span><span class="chartSub">1(낮음) → 5(높음)</span></div>
+      <svg id="c4" viewBox="0 0 560 300" role="img" aria-label="핵심기능 평가 히트맵"></svg>
+      <p class="note" style="margin:8px 0 0" id="matNote"></p>
+    </div>
+    <div class="card">
+      <div class="chartHead"><span class="chartTitle">5.6 개발 단계별 기능 배분</span><span class="chartSub">단위: 개 · 색은 핵심기능</span></div>
+      <div class="legend" id="lg5"></div>
+      <svg id="c5" viewBox="0 0 560 300" role="img" aria-label="Phase별 기능 수 누적 막대그래프"></svg>
+    </div>
+  </div>
+  <div class="card scroll"><h3>단계별 로드맵 (기능 배치)</h3>
+    <table style="margin-top:10px">
+      <thead><tr><th style="width:15%">단계</th><th style="width:11%">기간(안)</th><th style="width:28%">단계 목표 · 검증 질문</th><th>포함 기능</th></tr></thead>
+      <tbody id="roadTbl"></tbody></table></div>
+</section>
+
+${QFD.enable?`<section>
+  <h2><span class="num">6</span>Kano · QFD 연계 설계</h2>
+  <p class="lead">${META.s6Lead||""}</p>
+  <div class="grid2">
+    <div class="card"><h3>${QFD.axisTitle}</h3>
+      <table style="margin-top:10px"><thead><tr><th style="width:28%">축</th><th>내용</th></tr></thead>
+      <tbody id="qfdTbl"></tbody></table></div>
+    <div class="card"><h3>${QFD.kanoTitle}</h3>
+      <ul class="tight">${QFD.kanoGuide.map(g=>`<li>${g}</li>`).join("")}</ul></div>
+  </div>
+  ${VOC.length?`<div class="card scroll"><h3>고객요구(VOC) 후보 — QFD 좌측 축 초안</h3>
+    <table style="margin-top:10px"><thead><tr><th style="width:6%">ID</th><th style="width:13%">요구 주체</th>
+      <th style="width:36%">고객의 말 (VOC)</th><th style="width:26%">환산된 요구품질</th><th style="width:19%">주 연관 기능</th></tr></thead>
+    <tbody id="vocTbl"></tbody></table>
+    ${QFD.vocCaption?`<caption>${QFD.vocCaption}</caption>`:""}</div>`:""}
+</section>`:""}
+
+<section>
+  <h2><span class="num">7</span>리스크와 다음 단계</h2>
+  <p class="lead">${META.s7Lead||""}</p>
+  <div class="card"><h3>${RISKS.title}</h3><div class="scroll">
+    <table style="margin-top:10px"><thead><tr><th style="width:16%">리스크</th><th style="width:32%">내용</th>
+      <th style="width:30%">완화 기능·설계</th><th style="width:22%">잔여 리스크</th></tr></thead>
+    <tbody id="riskTbl"></tbody></table></div></div>
+  <div class="card"><h3>${NEXT.title}</h3>
+    <ul class="tight">${NEXT.items.map(i=>`<li>${i}</li>`).join("")}</ul></div>
+</section>`;
+}
+
+/* ---------- flow ---------- */
+function flow(){
+  if(!FLOW.enable)return;
+  const b=$("#flowBody"); if(!b)return;
+  b.style.gridTemplateColumns=`repeat(${FLOW.columns.length},1fr)`;
+  const tone={neutral:"background:var(--wash);color:var(--text-primary)",
+              primary:"background:var(--s1);color:#fff", accent:"background:var(--s2);color:#fff",
+              alt:"background:var(--s3);color:#fff"};
+  b.innerHTML=FLOW.columns.map(col=>{
+    const steps=col.steps.map((s,i)=>{
+      const acc=s.accent?`border-left:3px solid var(--${s.accent});`:"";
+      const cls=s.kind==="gate"?"gate":(s.kind==="hi"?"step hi":"step");
+      const sidStyle=s.kind==="gate"?'style="color:var(--s3)"':"";
+      const node=`<div class="${cls}" style="${acc}">
+        ${s.sid?`<span class="sid" ${sidStyle}>${s.sid}</span>`:""}${s.text}
+        ${s.note?`<br><span class="stepNote">${s.note}</span>`:""}</div>`;
+      return (i?`<div class="arrowRow">↓</div>`:"")+node;
+    }).join("");
+    return `<div class="flowCol"><div class="flowHead" style="${tone[col.tone]||tone.neutral}">${col.head}</div>${steps}</div>`;
+  }).join("");
+
+  const gt=FLOW.gradeTable;
+  if(gt&&gt.enable&&$("#gradeTbl")){
+    $("#gradeTbl").innerHTML=`<thead><tr>${gt.head.map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+      <tbody>${gt.rows.map(r=>`<tr>${r.map(c=>{
+        if(c&&c.badge)return `<td><span class="tierBadge" style="background:${c.color}">${c.badge}</span></td>`;
+        if(c&&c.num!==undefined)return `<td class="num">${c.num}</td>`;
+        return `<td>${c}</td>`;}).join("")}</tr>`).join("")}</tbody>`;
+  }
+}
+
+/* ---------- FAST ---------- */
+function fast(){
+  const b=$("#fastBody"); b.innerHTML="";
+  CORE.forEach((c,i)=>{
+    const row=document.createElement("div"); row.className="bandRow";
+    const c1=document.createElement("div"); c1.className="spanCell";
+    const c2=document.createElement("div"); c2.className="spanCell";
+    if(i===0){
+      c1.innerHTML=`<div class="node task"><span class="nid">과업 / TASK</span>${META.task}
+        <div style="margin-top:7px;font-size:11px;color:var(--muted)">${META.taskPurpose||""}</div></div>`;
+      c2.innerHTML=`<div class="node basic"><span class="nid">기본기능 / BASIC</span>${META.basicFunctionShort||META.basicFunction}</div>`;
+    }
+    const c3=document.createElement("div"); c3.className="spanCell";
+    c3.innerHTML=`<div class="node core" style="color:var(${SLOT(c.slot)})">
+        <span class="nid" style="color:var(--muted)">${c.id}${c.en?" · "+c.en:""}</span>
+        <span style="color:var(--text-primary)">${c.name}</span></div>`;
+    const c4=document.createElement("div");
+    c4.innerHTML=`<div class="leafGrid">`+subsOf(c.id).map(s=>
+      `<div class="node leaf${s.isNew?" key":""}"><span class="nid">${s.id}${s.isNew?' <span style="color:var(--s3)">· 신규</span>':''}</span>${s.name}</div>`).join("")+`</div>`;
+    row.append(c1,c2,c3,c4); b.appendChild(row);
+  });
+}
+
+/* ---------- tables ---------- */
+function tables(){
+  $("#coreTbl").innerHTML=CORE.map(c=>{
+    const subs=subsOf(c.id), ss=SUBSUB.filter(x=>x.parent.startsWith(c.id+"."));
+    const trl=subs.length?(subs.reduce((a,s)=>a+s.trl,0)/subs.length).toFixed(1):"–";
+    return `<tr><td class="id" style="color:var(${SLOT(c.slot)})">■ ${c.id}</td>
+      <td><b>${c.name}</b>${c.en?`<br><span style="font-size:11.5px;color:var(--muted)">${c.en}</span>`:""}</td>
+      <td class="tech">${c.def}</td><td class="tech">${c.req||"–"}</td>
+      <td class="num">${subs.length}</td><td class="num">${ss.length}</td><td class="num">${trl}</td></tr>`;}).join("");
+
+  const nNew=SUB.filter(s=>s.isNew).length;
+  $("#filters").innerHTML=`<button aria-pressed="true" data-f="ALL">전체 ${SUB.length}</button>`+
+    (nNew?`<button aria-pressed="false" data-f="NEW">신규 ${nNew}</button>`:"")+
+    CORE.map(c=>`<button aria-pressed="false" data-f="${c.id}">${c.id} ${c.sh}</button>`).join("");
+  $("#filters").addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b)return;
+    [...$("#filters").children].forEach(x=>x.setAttribute("aria-pressed", x===b));
+    renderSub(b.dataset.f); syncExpandAll();
+  });
+  renderSub("ALL");
+
+  if($("#logicTbl"))$("#logicTbl").innerHTML=LOGIC.map(r=>
+    `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("");
+
+  $("#roadTbl").innerHTML=PHASES.map(p=>{
+    const fs=SUB.filter(s=>s.phase===p.n);
+    return `<tr><td><b class="ph${p.n}">${p.name}</b><br><span class="chip">${fs.length}개 기능</span></td>
+      <td class="tech">${p.term}</td><td class="tech">${p.goal}</td>
+      <td class="tech">${fs.map(f=>f.id).join(" · ")||"–"}</td></tr>`;}).join("");
+
+  if($("#vocTbl"))$("#vocTbl").innerHTML=VOC.map(v=>
+    `<tr><td class="id">${v[0]}</td><td class="tech">${v[1]}</td><td>&ldquo;${esc(v[2])}&rdquo;</td>
+     <td class="tech">${v[3]}</td><td class="tech">${v[4]}</td></tr>`).join("");
+  if($("#qfdTbl"))$("#qfdTbl").innerHTML=QFD.axes.map(a=>`<tr><td>${a[0]}</td><td>${a[1]}</td></tr>`).join("");
+  if($("#riskTbl"))$("#riskTbl").innerHTML=RISKS.rows.map(r=>
+    `<tr>${r.map(c=>`<td class="tech">${c}</td>`).join("")}</tr>`).join("");
+  if(META.portfolioNote&&$("#portNote"))$("#portNote").innerHTML=META.portfolioNote;
+  if(META.matrixNote&&$("#matNote"))$("#matNote").innerHTML=META.matrixNote;
+}
+function renderSub(f){
+  const rows=SUB.filter(s=> f==="ALL" ? true : f==="NEW" ? s.isNew : s.core===f);
+  $("#subTbl").innerHTML=rows.map(s=>{
+    const c=CORE.find(c=>c.id===s.core)||{slot:1};
+    const kids=kidsOf(s.id);
+    return `<tr><td class="id" style="color:var(${SLOT(c.slot)})">${kids.length?`<button class="expandBtn" data-id="${s.id}" aria-expanded="false" aria-label="${s.id} 세세부기능 펼치기">▸</button>`:""}${s.id}</td>
+      <td><b>${s.name}</b>${s.isNew?' <span class="chip new">신규</span>':''}</td>
+      <td class="tech">${s.def}</td><td class="tech">${s.tech}</td>
+      <td class="num">${s.trl}</td><td class="num">${s.diff}</td><td class="num">${s.val}</td>
+      <td><span class="chip">${s.stage}</span></td></tr>
+      ${kids.length?`<tr class="detailRow" data-parent="${s.id}" style="display:none"><td colspan="8">
+        <div class="subsubWrap">${kids.map(k=>`<div class="subsubItem"><span class="ssid">${k.id}</span>${k.name}</div>`).join("")}</div></td></tr>`:""}`;
+  }).join("");
+}
+
+/* ---------- charts ---------- */
+function chart0(){
+  const svg=$("#c0"); if(!svg||!KPI)return; svg.innerHTML="";
+  const W=1120,H=250,L=176,R=90,T=14,B=44, iw=W-L-R, ih=H-T-B, max=KPI.max||100;
+  for(let v=0;v<=max;v+=max/5){const x=L+v/max*iw;
+    svg.appendChild(el("line",{x1:x,x2:x,y1:T,y2:T+ih,class:v?"gridline":"axisline"}));
+    svg.appendChild(el("text",{x,y:T+ih+18,"text-anchor":"middle",class:"tick"})).textContent=v+(KPI.unit||"%");}
+  const rh=ih/KPI.rows.length, bar=Math.min(30,rh*0.5);
+  KPI.rows.forEach((d,i)=>{
+    const y=T+rh*i+(rh-bar)/2;
+    if(d.v==null){
+      svg.appendChild(el("rect",{x:L,y,width:iw*0.22,height:bar,rx:4,fill:"none",
+        stroke:cv("--axis"),"stroke-width":1.5,"stroke-dasharray":"5 4"}));
+      svg.appendChild(el("text",{x:L+12,y:y+bar/2+4,class:"lbl","font-style":"italic"})).textContent=d.placeholder||"측정되지 않음";
+    }else{
+      svg.appendChild(mk(L,y,d.v/max*iw,bar,cv("--s1"),`<b>${d.label}</b><br><span class="t2">${d.v}${KPI.unit||"%"}</span>`));
+      svg.appendChild(el("text",{x:L+d.v/max*iw+10,y:y+bar/2+5,class:"lblStrong","font-size":13})).textContent=d.v+(KPI.unit||"%");
+    }
+    svg.appendChild(el("text",{x:L-12,y:T+rh*i+rh/2-1,"text-anchor":"end",class:"lbl"})).textContent=d.label;
+    svg.appendChild(el("text",{x:L-12,y:T+rh*i+rh/2+13,"text-anchor":"end",class:"tick"})).textContent=d.note||"";
+  });
+  svg.appendChild(el("line",{x1:L,x2:L,y1:T,y2:T+ih,class:"axisline"}));
+  if(KPI.axisLabel)svg.appendChild(el("text",{x:L+iw/2,y:H-B+38,"text-anchor":"middle",class:"lbl"})).textContent=KPI.axisLabel;
+}
+function stackedCol(id,valueFn,colors,labelFn){
+  const svg=$("#"+id); if(!svg)return; svg.innerHTML="";
+  const W=560,H=300,L=54,R=16,T=14,B=48, iw=W-L-R, ih=H-T-B;
+  const totals=CORE.map(c=>valueFn(c).reduce((a,b)=>a+b,0));
+  const max=niceMax(Math.max(1,...totals),2);
+  const stepY=max<=10?2:Math.ceil(max/5);
+  for(let v=0;v<=max;v+=stepY){const y=T+ih-v/max*ih;
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:y,y2:y,class:v?"gridline":"axisline"}));
+    svg.appendChild(el("text",{x:L-8,y:y+4,"text-anchor":"end",class:"tick"})).textContent=v;}
+  const bw=iw/CORE.length, bar=Math.min(44,bw*0.54);
+  CORE.forEach((c,i)=>{
+    const segs=valueFn(c); const x=L+bw*i+(bw-bar)/2; let acc=0;
+    segs.forEach((n,k)=>{ if(!n)return;
+      const y0=T+ih-(acc+n)/max*ih, y1=T+ih-acc/max*ih;
+      svg.appendChild(mk(x,y0,bar,y1-y0-2,cv(colors[k]),labelFn(c,k,n))); acc+=n;});
+    svg.appendChild(el("text",{x:x+bar/2,y:T+ih-acc/max*ih-8,"text-anchor":"middle",class:"lblStrong"})).textContent=acc;
+    svg.appendChild(el("text",{x:L+bw*i+bw/2,y:H-B+18,"text-anchor":"middle",class:"lbl"})).textContent=c.id;
+    svg.appendChild(el("text",{x:L+bw*i+bw/2,y:H-B+32,"text-anchor":"middle",class:"tick"})).textContent=c.sh;
+  });
+  svg.appendChild(el("line",{x1:L,x2:L,y1:T,y2:T+ih,class:"axisline"}));
+}
+function chart1(){
+  const stages=[...new Set(SUB.map(s=>s.stage))];
+  if($("#lg1"))$("#lg1").innerHTML=stages.map((s,i)=>`<span><i style="background:var(${SLOT(i+1)})"></i>${s}</span>`).join("");
+  stackedCol("c1",c=>stages.map(st=>subsOf(c.id).filter(x=>x.stage===st).length),
+    stages.map((_,i)=>SLOT(i+1)),(c,k,n)=>`<b>${c.id} ${c.name}</b><br><span class="t2">${stages[k]} ${n}개</span>`);
+}
+function chart2(){
+  stackedCol("c2",c=>KANO.map(k=>subsOf(c.id).filter(x=>x.kano===k).length),
+    KC,(c,k,n)=>`<b>${c.id} ${c.name}</b><br><span class="t2">${KANO[k]} — ${n}개</span>`);
+}
+function chart3(){
+  const svg=$("#c3"); if(!svg)return; svg.innerHTML="";
+  const W=1120,H=500,L=64,R=24,T=24,B=54, iw=W-L-R, ih=H-T-B;
+  const dMin=Math.min(...SUB.map(s=>s.diff)), dMax=Math.max(...SUB.map(s=>s.diff));
+  const vMin=Math.min(...SUB.map(s=>s.val)),  vMax=Math.max(...SUB.map(s=>s.val));
+  const dLo=dMin-0.5, dHi=dMax+0.5, vLo=vMin-0.5, vHi=vMax+0.5;
+  const X=v=>L+(v-dLo)/(dHi-dLo)*iw, Y=v=>T+ih-(v-vLo)/(vHi-vLo)*ih;
+  for(let v=Math.ceil(dLo);v<=Math.floor(dHi);v++){svg.appendChild(el("line",{x1:X(v),x2:X(v),y1:T,y2:T+ih,class:"gridline"}));
+    svg.appendChild(el("text",{x:X(v),y:H-B+20,"text-anchor":"middle",class:"tick"})).textContent=v;}
+  for(let v=Math.ceil(vLo);v<=Math.floor(vHi);v++){svg.appendChild(el("line",{x1:L,x2:W-R,y1:Y(v),y2:Y(v),class:"gridline"}));
+    svg.appendChild(el("text",{x:L-10,y:Y(v)+4,"text-anchor":"end",class:"tick"})).textContent=v;}
+  const qx=X((dLo+dHi)/2), qy=Y((vLo+vHi)/2);
+  svg.appendChild(el("line",{x1:qx,x2:qx,y1:T,y2:T+ih,stroke:cv("--axis"),"stroke-dasharray":"4 4","stroke-width":1}));
+  svg.appendChild(el("line",{x1:L,x2:W-R,y1:qy,y2:qy,stroke:cv("--axis"),"stroke-dasharray":"4 4","stroke-width":1}));
+  [["Quick Win — 우선 착수",L+12,T+20,"start"],["전략과제 — 차별화·고리스크",W-R-12,T+20,"end"],
+   ["기본 이행",L+12,T+ih-10,"start"],["후순위 · 옵션 모듈",W-R-12,T+ih-10,"end"]]
+   .forEach(([t,x,y,a])=>svg.appendChild(el("text",{x,y,"text-anchor":a,class:"tick","font-weight":600})).textContent=t);
+  svg.appendChild(el("text",{x:L+iw/2,y:H-B+42,"text-anchor":"middle",class:"lbl"})).textContent="구현 난이도 →";
+  svg.appendChild(el("text",{x:16,y:T+ih/2,"text-anchor":"middle",class:"lbl",transform:`rotate(-90 16 ${T+ih/2})`})).textContent="체감 가치 →";
+  const groups={};
+  SUB.forEach(s=>{const k=s.diff+"_"+s.val;(groups[k]=groups[k]||[]).push(s);});
+  const pos={};
+  Object.values(groups).forEach(g=>{
+    const n=g.length, cols=Math.min(4,Math.ceil(n/5)), rows=Math.ceil(n/cols), dx=68, dy=21;
+    g.forEach((s,i)=>{const r=i%rows, cI=Math.floor(i/rows);
+      pos[s.id]={cx:X(s.diff)+(cI-(cols-1)/2)*dx, cy:Y(s.val)+(r-(rows-1)/2)*dy};});
+  });
+  SUB.forEach(s=>{
+    const {cx,cy}=pos[s.id]; const c=CORE.find(c=>c.id===s.core)||{slot:1,name:""};
+    const g=el("g",{class:"mark"});
+    g.appendChild(el("circle",{cx,cy,r:5,fill:cv(SLOT(c.slot)),stroke:cv("--surface-1"),"stroke-width":2}));
+    const t=el("text",{x:cx+9,y:cy+4,class:s.isNew?"lblStrong":"lbl"}); t.textContent=s.id; g.appendChild(t);
+    g.addEventListener("mouseenter",e=>showTip(e,
+      `<b>${s.id} ${s.name}</b>${s.isNew?' <span style="color:var(--s3)">· 신규</span>':''}<br>
+       <span class="t2">${c.id} ${c.name} · ${s.stage} · Phase ${s.phase}</span><br>
+       <span class="t2">난이도 ${s.diff} · 가치 ${s.val} · TRL ${s.trl} · Kano(가설) ${s.kano}</span>`));
+    g.addEventListener("mousemove",moveTip); g.addEventListener("mouseleave",hideTip);
+    svg.appendChild(g);
+  });
+  svg.appendChild(el("line",{x1:L,x2:W-R,y1:T+ih,y2:T+ih,class:"axisline"}));
+  svg.appendChild(el("line",{x1:L,x2:L,y1:T,y2:T+ih,class:"axisline"}));
+}
+function chart4(){
+  const svg=$("#c4"); if(!svg)return; svg.innerHTML="";
+  const W=560,H=300,L=118,R=14,T=34,B=14;
+  const axes=Object.keys(CORE[0].scores||{}); if(!axes.length)return;
+  const cw=(W-L-R)/axes.length, rh=(H-T-B)/CORE.length;
+  const ramp=["--seq-100","--seq-200","--seq-300","--seq-500","--seq-700"];
+  const dark=()=>document.documentElement.dataset.theme==="dark";
+  axes.forEach((a,j)=>svg.appendChild(el("text",{x:L+cw*j+cw/2,y:T-12,"text-anchor":"middle",class:"tick"})).textContent=a);
+  CORE.forEach((c,i)=>{
+    svg.appendChild(el("text",{x:L-10,y:T+rh*i+rh/2+4,"text-anchor":"end",class:"lbl"})).textContent=`${c.id} ${c.sh}`;
+    axes.forEach((a,j)=>{
+      const v=c.scores[a]; const g=el("g",{class:"mark"});
+      g.appendChild(el("rect",{x:L+cw*j+1,y:T+rh*i+1,width:cw-2,height:rh-2,rx:4,fill:cv(ramp[Math.max(0,Math.min(4,v-1))])}));
+      const txt=el("text",{x:L+cw*j+cw/2,y:T+rh*i+rh/2+4,"text-anchor":"middle",
+        fill:dark()?(v>=4?"#0b0b0b":"#ffffff"):(v>=4?"#ffffff":"#0b0b0b"),"font-size":11.5,"font-weight":600});
+      txt.textContent=v; g.appendChild(txt);
+      g.addEventListener("mouseenter",e=>showTip(e,`<b>${c.id} ${c.name}</b><br><span class="t2">${a} — ${v}/5</span>`));
+      g.addEventListener("mousemove",moveTip); g.addEventListener("mouseleave",hideTip);
+      svg.appendChild(g);
+    });
+  });
+}
+function chart5(){
+  const svg=$("#c5"); if(!svg)return; svg.innerHTML="";
+  const W=560,H=300,L=92,R=24,T=20,B=46, iw=W-L-R, ih=H-T-B;
+  const totals=PHASES.map(p=>SUB.filter(s=>s.phase===p.n).length);
+  const max=niceMax(Math.max(1,...totals),4);
+  if($("#lg5"))$("#lg5").innerHTML=CORE.map(c=>`<span><i style="background:var(${SLOT(c.slot)})"></i>${c.id} ${c.sh}</span>`).join("");
+  for(let v=0;v<=max;v+=Math.ceil(max/4)){const x=L+v/max*iw;
+    svg.appendChild(el("line",{x1:x,x2:x,y1:T,y2:T+ih,class:v?"gridline":"axisline"}));
+    svg.appendChild(el("text",{x,y:T+ih+18,"text-anchor":"middle",class:"tick"})).textContent=v;}
+  const rh=ih/PHASES.length, bar=Math.min(38,rh*0.5);
+  PHASES.forEach((p,i)=>{
+    const y=T+rh*i+(rh-bar)/2; let acc=0;
+    CORE.forEach(c=>{
+      const n=SUB.filter(s=>s.phase===p.n&&s.core===c.id).length; if(!n)return;
+      svg.appendChild(mk(L+acc/max*iw,y,(n/max*iw)-2,bar,cv(SLOT(c.slot)),
+        `<b>Phase ${p.n}</b><br><span class="t2">${c.id} ${c.name} — ${n}개</span>`)); acc+=n;});
+    svg.appendChild(el("text",{x:L+acc/max*iw+9,y:y+bar/2+4,class:"lblStrong"})).textContent=acc;
+    svg.appendChild(el("text",{x:L-10,y:T+rh*i+rh/2-1,"text-anchor":"end",class:"lbl"})).textContent="Phase "+p.n;
+    svg.appendChild(el("text",{x:L-10,y:T+rh*i+rh/2+13,"text-anchor":"end",class:"tick"})).textContent=p.term;
+  });
+  svg.appendChild(el("text",{x:L+iw/2,y:H-B+38,"text-anchor":"middle",class:"lbl"})).textContent="기능 수 (개)";
+  svg.appendChild(el("line",{x1:L,x2:L,y1:T,y2:T+ih,class:"axisline"}));
+}
+function draw(){chart0();chart1();chart2();chart3();chart4();chart5();}
+function tg(){const r=document.documentElement; r.dataset.theme=r.dataset.theme==="dark"?"light":"dark"; draw();}
+
+/* 펼치기 — 이벤트 위임이라 필터로 표가 다시 그려져도 계속 작동한다 */
+let allExpanded=false;
+function syncExpandAll(){
+  document.querySelectorAll(".detailRow").forEach(r=>r.style.display=allExpanded?"table-row":"none");
+  document.querySelectorAll(".expandBtn").forEach(b=>{b.setAttribute("aria-expanded",String(allExpanded)); b.textContent=allExpanded?"▾":"▸";});
+}
+document.addEventListener("click",e=>{
+  const btn=e.target.closest(".expandBtn"); if(!btn)return;
+  const row=document.querySelector(`.detailRow[data-parent="${btn.dataset.id}"]`); if(!row)return;
+  const on=btn.getAttribute("aria-expanded")==="true";
+  row.style.display=on?"none":"table-row";
+  btn.setAttribute("aria-expanded",String(!on)); btn.textContent=on?"▸":"▾";
+});
+
+shell(); flow(); fast(); tables(); draw();
+const eab=$("#expandAllBtn");
+if(eab)eab.addEventListener("click",()=>{allExpanded=!allExpanded; syncExpandAll(); eab.textContent=allExpanded?"전체 접기":"전체 펼치기";});
+</script>
+</body>
+</html>
