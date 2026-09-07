@@ -1,0 +1,14 @@
+# 다운로드
+yt-dlp>=2024.1.0
+
+# 전사 — 둘 중 하나면 동작. faster-whisper가 기본,
+# huggingface.co가 막힌 환경에서는 sherpa-onnx(GitHub 배포 모델)로 자동 전환.
+faster-whisper>=1.0.0
+sherpa-onnx>=1.10.0
+numpy>=1.24
+
+# 키프레임 감지 · contact sheet
+imagehash>=4.3.1
+Pillow>=10.0.0
+
+# 시스템 패키지(별도 설치): ffmpeg, tesseract-ocr, tesseract-ocr-kor

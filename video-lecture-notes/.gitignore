@@ -1,0 +1,44 @@
+# 작업 산출물 — 영상, 전사, 프레임은 저장소에 올리지 않는다
+work/
+*-workspace/
+source.*
+audio16k.wav
+transcript.*
+timeline.*
+frames/
+sheets/
+chunks/
+notes.md
+ledger.md
+frames.json
+sheets.json
+meta.json
+subs.*.vtt
+subs.*.srt
+
+# 미디어 · 모델
+*.mp4
+*.mkv
+*.webm
+*.mov
+*.m4a
+*.mp3
+*.wav
+*.onnx
+*.tar.bz2
+
+# 패키지
+*.skill
+
+# 파이썬
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# OS · 에디터
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
