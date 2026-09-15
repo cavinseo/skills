@@ -1,0 +1,112 @@
+:root{
+  --bg:#FFFFFF; --paper:#FFFFFF; --ink:#111111; --ink-2:#444444; --ink-3:#6E6E6E;
+  --line:#CFCFCF; --line-2:#8A8A8A;
+  --pine:#111111; --pine-soft:#EDEDED; --pine-ink:#111111;
+  --ochre:#333333; --ochre-soft:#F2F2F2;
+  --warn:#111111; --warn-soft:#DDDDDD; --ok:#111111; --ok-soft:#FFFFFF; --todo:#555555; --todo-soft:#F2F2F2;
+  --row:#F5F5F5;
+}
+*{box-sizing:border-box}
+html{color-scheme:light only}
+body{margin:0;background:#fff;color:var(--ink);font-family:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding-block:36px 60px;padding-inline:24px}
+h1,h2,h3{font-family:"Gowun Batang","Nanum Myeongjo",Batang,serif;text-wrap:balance;margin:0}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);font-weight:700}
+header{border-bottom:2.5px solid #111;padding-bottom:18px;margin-bottom:30px;display:flex;flex-wrap:wrap;gap:14px 40px;align-items:flex-end;justify-content:space-between}
+header h1{font-size:30px;line-height:1.2;margin-top:6px}
+header h1 small{display:block;font-family:"Noto Sans KR",sans-serif;font-size:14px;font-weight:400;color:var(--ink-2);margin-top:6px}
+.meta{font-size:12.5px;color:var(--ink-2);line-height:1.8;text-align:right}
+.meta b{color:var(--ink);font-weight:500}
+
+section{margin-bottom:44px}
+.sec-head{display:flex;align-items:baseline;gap:14px;border-bottom:1.5px solid #111;padding-bottom:8px;margin-bottom:18px}
+.sec-head h2{font-size:20px}
+.sec-head .n{font-family:"Gowun Batang",serif;font-size:13px;font-weight:700;letter-spacing:.08em}
+.sec-head p{margin:0 0 0 auto;font-size:12.5px;color:var(--ink-3)}
+h3{font-size:16px;margin:26px 0 10px;display:flex;align-items:center;gap:10px}
+h3 .tag{font-family:"Noto Sans KR",sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;padding:1px 8px;border:1.5px solid #111;background:#111;color:#fff}
+h3 .tag.opt{background:#fff;color:#111}
+h3 .goal{font-family:"Noto Sans KR",sans-serif;font-size:12.5px;font-weight:400;color:var(--ink-2);margin-left:auto}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:18px}
+.tile{border:1px solid #111;border-top:3px solid #111;padding:14px 16px 12px}
+.tile.lead{background:#F2F2F2}
+.tile .lbl{font-size:11.5px;color:var(--ink-2);letter-spacing:.06em;font-weight:500}
+.tile .val{font-family:"Gowun Batang",serif;font-size:28px;font-weight:700;line-height:1.15;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.tile .val em{font-style:normal;font-size:14px;color:var(--ink-2);font-weight:400;margin-left:4px}
+.tile .sub{font-size:12px;color:var(--ink-2);line-height:1.5}
+.tile .sub b{color:#111;font-weight:700}
+
+.gap{border:1px solid #111;padding:18px 20px}
+.gap .row{display:grid;grid-template-columns:150px 1fr 130px;align-items:center;gap:14px;margin:8px 0;font-size:13px}
+.gap .row .k{color:var(--ink-2)}
+.gap .row .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+.bar{height:20px;background:#fff;border:1px solid #8A8A8A;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:#444}
+.bar i.w{background:#111}
+.bar i.hatch{background:repeating-linear-gradient(45deg,#111 0 4px,#fff 4px 9px)}
+.gap .note{margin:12px 0 0;font-size:13px;color:var(--ink-2);padding-top:10px;border-top:1px dashed #8A8A8A}
+.gap .note b{color:#111;font-weight:700}
+.formula{font-family:"Gowun Batang",serif;font-size:15px;background:#F2F2F2;color:#111;padding:10px 16px;border-left:4px solid #111;margin:0 0 14px}
+
+.tw{overflow-x:auto;border:1px solid #111}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:760px}
+th,td{padding:7px 10px;text-align:left;vertical-align:top;border-bottom:1px solid #CFCFCF}
+th{font-size:11.5px;font-weight:700;color:#111;letter-spacing:.04em;background:#E9E9E9;white-space:nowrap;border-bottom:1.5px solid #111}
+tbody tr:last-child td{border-bottom:0}
+td.csf{font-weight:700;color:#111;background:#F5F5F5;width:150px;border-right:1px solid #8A8A8A}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.c,th.c{text-align:center;white-space:nowrap}
+.t{display:inline-block;font-size:10.5px;font-weight:700;padding:0 6px;border:1.2px solid #111;letter-spacing:.03em;white-space:nowrap;line-height:1.6}
+.t.r{background:#111;color:#fff}
+.t.l{background:#fff;color:#111}
+.p{color:#111;font-size:10.5px;font-weight:700;margin-left:4px;white-space:nowrap;border:1px dashed #111;padding:0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--ink-2);margin:0 0 12px}
+.legend span{display:flex;align-items:center;gap:6px}
+
+.st{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:1px 9px 1px 7px;border:1.2px solid #111;white-space:nowrap}
+.st::before{width:8px;height:8px;border:1.2px solid #111;display:inline-block}
+.st.ok{background:#fff;color:#111}
+.st.ok::before{content:"";background:#111;border-radius:50%}
+.st.warn{background:#111;color:#fff}
+.st.warn::before{content:"";background:#fff;border-color:#fff;transform:rotate(45deg)}
+.st.todo{background:#fff;color:#333;border-style:dashed}
+.st.todo::before{content:"";background:#fff;border-radius:50%}
+
+.notes{display:grid;gap:10px}
+.note-item{border:1px solid #111;padding:14px 18px;display:grid;grid-template-columns:34px 1fr;gap:12px;break-inside:avoid}
+.note-item .idx{font-family:"Gowun Batang",serif;font-size:22px;font-weight:700;line-height:1.1}
+.note-item h4{margin:0 0 4px;font-size:14.5px}
+.note-item p{margin:0;font-size:13.5px;color:var(--ink-2)}
+footer{margin-top:32px;padding-top:12px;border-top:1px solid #8A8A8A;font-size:12px;color:var(--ink-3)}
+@media (max-width:640px){
+  header h1{font-size:24px} .meta{text-align:left}
+  .gap .row{grid-template-columns:1fr;gap:4px} .gap .row .v{text-align:left}
+  h3{flex-wrap:wrap} h3 .goal{margin-left:0;width:100%}
+}
+@page{size:A4;margin:14mm 12mm}
+@media print{
+  body{font-size:11.5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .wrap{max-width:none;padding:0}
+  .tw{overflow:visible;border-color:#111} table{min-width:0;font-size:10.5px} th,td{padding:5px 7px}
+  header h1{font-size:24px} .tile .val{font-size:22px}
+  section{break-inside:auto} #link,#dash,#notes{break-before:page}
+  #close{break-before:auto}
+  h3{break-after:avoid} .tw,.gap,.tiles{break-inside:avoid}
+  #idx .tw{break-inside:auto} #idx tr{break-inside:avoid} #idx{break-before:auto}
+  thead{display:table-header-group} tr{break-inside:avoid}
+  a{color:#111;text-decoration:none}
+}
+.kid{display:block;font-size:9.5px;font-weight:700;color:var(--ink-3);letter-spacing:.04em;margin-top:1px;font-family:"Noto Sans KR",sans-serif}
+.code{font-weight:700;white-space:nowrap}
+.calc{font-variant-numeric:tabular-nums;line-height:1.8}
+.calc b{font-weight:700}
+.arrow{color:var(--ink-3);padding:0 2px}
+td.ok-mark{font-weight:700;white-space:nowrap;text-align:center}
+td.cd{width:44px;white-space:nowrap;padding-left:6px;padding-right:6px}
+b.code.kgi{font-size:10px;color:var(--ink-3)}
+#kpi table,#dash table{min-width:820px}
+td.grp{background:var(--ochre-soft);font-weight:700;font-size:12.5px;letter-spacing:.04em;border-bottom:1px solid var(--line-2)}
+td.prop{font-size:11.5px}
+#idx table{min-width:620px}
+#idx td:nth-child(3){max-width:210px;white-space:normal}

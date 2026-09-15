@@ -1,0 +1,274 @@
+{
+  "_comment": "실제 지원사업 중간점검 사례를 익명화한 예시. 구조와 검산 방식을 보여주는 것이 목적이다.",
+
+  "meta": {
+    "eyebrow": "2026 ○○ 창업·성장 패키지 지원사업",
+    "title": "A사 KGI → KPI 도출표",
+    "subtitle": "전통 목공문화 기반 체험형 DIY KIT 및 교육 서비스",
+    "meta_lines": [
+      "기준 자료 <b>사업계획서 · 중간점검표(8/31 기준)</b>",
+      "작성 기준일 <b>2026.09.13</b> · 사업종료 <b>2026.11.30</b> · 잔여 <b>9~11월, 3개월</b>"
+    ],
+    "footer": "<b>사업종료 기준 2026.11.30</b> · 「제안」 표기 수치는 역산 제안값으로 확정 전 협의 필요"
+  },
+
+  "labels": {
+    "schedule": "사업종료(11.30)까지 3개월 마감 일정",
+    "comments": "점검 의견 — 멘토링 코멘트",
+    "dash_note": "9·10·11월 말 대표·멘토 공동 점검"
+  },
+
+  "kgi": {
+    "primary": {
+      "label": "최상위 KGI · 2026 연매출",
+      "value": "250,000", "unit": "천원",
+      "sub": "전년 실적 174,448천원 대비 <b>+43.3%</b> · 8/31 누적 120,000천원(48.0%) · <b>잔여 3개월에 130,000천원</b>"
+    },
+    "supporting": [
+      { "label": "보조 KGI-1 · 신규 B2B/B2G 판로", "value": "8", "unit": "곳+ 확보",
+        "sub": "학교·대학·복지기관 신규 거래처 — 연간 목표 수치 미설정" },
+      { "label": "보조 KGI-2 · 온라인 판매 확대", "value": "자사몰", "unit": "9월 중순 오픈",
+        "sub": "기존 오픈마켓 누적 200,000천원 — 온라인 매출 목표 미설정" },
+      { "label": "보조 KGI-3 · 사업모델 고도화", "value": "35", "unit": "종 → 신규 개발",
+        "sub": "전통 소재 활용 생활형 신제품 · 시장조사 완료, 디자인 기획 중" }
+    ]
+  },
+
+  "gap": {
+    "title": "매출 KGI 갭 분석",
+    "annual_target": 250000, "actual": 120000, "as_of": "8/31",
+    "months_remaining": 3, "baseline_monthly": 15000,
+    "period_end": "2026-11-30", "remaining_label": "9~11월", "unit": "천원",
+    "note": "<b>사업기간이 11월 종료</b>이므로 잔여는 9·10·11월 <b>3개월</b>뿐이다. 월 매출을 <b>약 2.9배</b>로 끌어올려야 달성하며, 12월 성수기와 12월 개최 박람회는 <b>사업기간 밖</b>이라 목표 달성과 사업비 집행에 쓸 수 없다."
+  },
+
+  "channels": [
+    { "key": "b2b",     "name": "기관·학교 납품", "target": 95000 },
+    { "key": "program", "name": "체험 운영",      "target": 15000 },
+    { "key": "online",  "name": "온라인 판매",    "target": 20000 }
+  ],
+
+  "budget": {
+    "total": 11000,
+    "items": [
+      { "name": "소모품비·재료비", "amount": 6600 },
+      { "name": "외주용역비",     "amount": 3300 },
+      { "name": "지급수수료",     "amount": 1100 }
+    ]
+  },
+
+  "sections": [
+    {
+      "no": "①", "kind": "필수", "title": "수익창출",
+      "goal": "KGI · 연매출 250,000천원",
+      "formula": "연매출 = ⓐ 기관·학교 납품 매출 + ⓑ 체험 프로그램 운영 매출 + ⓒ 온라인 판매 매출",
+      "csfs": [
+        {
+          "name": "CSF-1\n기관·학교 B2B/B2G 납품 확대",
+          "kpis": [
+            { "name": "잔여기간 납품 매출", "type": "R", "unit": "천원", "base": "—",
+              "target": "95,000", "target_note": "월 31,667 · 잔여의 73%",
+              "proposed": true, "current": "—", "cycle": "월" },
+            { "name": "신규 거래처 수 (누적)", "type": "R", "unit": "곳", "base": "—",
+              "target": "15", "proposed": true, "current": "8+", "cycle": "월" },
+            { "name": "기존 거래처 재구매율", "type": "R", "unit": "%", "base": "—",
+              "target": "60", "proposed": true, "current": "—", "cycle": "분기" },
+            { "name": "거래처당 평균 납품액", "type": "R", "unit": "천원", "base": "—",
+              "target": "5,000 이상", "proposed": true, "current": "—", "cycle": "분기" },
+            { "name": "제안·견적 발송 건수", "type": "S", "unit": "건/월", "base": "—",
+              "target": "10", "proposed": true, "current": "—", "cycle": "주" },
+            { "name": "견적 → 수주 전환율", "type": "S", "unit": "%", "base": "—",
+              "target": "30", "proposed": true, "current": "—", "cycle": "월" }
+          ]
+        },
+        {
+          "name": "CSF-2\n체험 프로그램 운영 확대",
+          "kpis": [
+            { "name": "체험 프로그램 운영 회차", "type": "R", "unit": "회", "base": "—",
+              "target": "잔여 15회", "target_note": "월 5회 · 9~11월",
+              "proposed": true, "current": "—", "cycle": "월" },
+            { "name": "회차당 평균 참가자 수", "type": "R", "unit": "명", "base": "—",
+              "target": "25", "proposed": true, "current": "—", "cycle": "회차" },
+            { "name": "체험 매출", "type": "R", "unit": "천원", "base": "—",
+              "target": "15,000", "target_note": "15회 × 25명 × 40천원",
+              "proposed": true, "current": "—", "cycle": "월" },
+            { "name": "체험 후 KIT 구매 전환율", "type": "S", "unit": "%", "base": "—",
+              "target": "15", "proposed": true, "current": "—", "cycle": "회차" }
+          ]
+        },
+        {
+          "name": "CSF-3\n온라인 판매 확대",
+          "kpis": [
+            { "name": "온라인 매출", "type": "R", "unit": "천원", "base": "누적 200,000",
+              "target": "잔여 20,000", "target_note": "월 6,667",
+              "proposed": true, "current": "—", "cycle": "월" },
+            { "name": "자사몰 오픈", "type": "S", "unit": "일자", "base": "없음",
+              "target": "9월 중순", "source": "점검표", "current": "구축 중", "cycle": "1회" },
+            { "name": "자사몰 월 방문자(UV) / 구매전환율", "type": "S", "unit": "명 / %", "base": "—",
+              "target": "2,000 / 2", "proposed": true, "current": "—", "cycle": "주" },
+            { "name": "월 온라인 주문 건수 / 객단가", "type": "R", "unit": "건 / 천원", "base": "—",
+              "target": "190 / 35", "target_note": "자사몰 40 + 기존채널 150",
+              "proposed": true, "current": "—", "cycle": "월" }
+          ]
+        }
+      ]
+    },
+    {
+      "no": "②", "kind": "선택", "title": "상품개발",
+      "goal": "KGI · 전통 소재 기반 생활형 신규 KIT 개발",
+      "csfs": [{
+        "name": "CSF-4\n신규 제품 출시",
+        "kpis": [
+          { "name": "시장조사·수요분석 완료", "type": "S", "unit": "건",
+            "target": "1", "source": "점검표", "current": "완료", "cycle": "1회" },
+          { "name": "후보제품 선정 → 디자인 기획 완료", "type": "S", "unit": "종",
+            "target": "3", "proposed": true, "current": "진행 중", "cycle": "월" },
+          { "name": "시제품 제작 완료", "type": "S", "unit": "종",
+            "target": "2", "proposed": true, "current": "규격 검토 중", "cycle": "월" },
+          { "name": "신제품 출시(상품화) 종수", "type": "R", "unit": "종",
+            "target": "11월 내 1 이상", "proposed": true, "current": "0", "cycle": "분기" },
+          { "name": "신제품 개발 리드타임", "type": "S", "unit": "개월",
+            "target": "3 이내", "target_note": "9월 디자인 → 10월 시제품 → 11월 출시",
+            "proposed": true, "current": "—", "cycle": "건별" }
+        ]
+      }]
+    },
+    {
+      "no": "③", "kind": "선택", "title": "대외인증",
+      "goal": "KGI · 신규제품 안전인증 및 지식재산권 확보",
+      "csfs": [{
+        "name": "CSF-5\n인증·IP 확보",
+        "kpis": [
+          { "name": "안전확인 완료 제품 수", "type": "R", "unit": "종",
+            "target": "35 + 신규 전 품목", "source": "점검표", "current": "35종 완료", "cycle": "분기" },
+          { "name": "신규제품 시험 접수 → 완료 기간", "type": "S", "unit": "주",
+            "target": "접수 후 6주 이내", "target_note": "11월 완료 역산 시 <b>10월 초 접수 마감</b>",
+            "proposed": true, "current": "서류 검토 중", "cycle": "건별" },
+          { "name": "지식재산권 출원 건수", "type": "R", "unit": "건",
+            "target": "11월 내 2", "target_note": "신제품 디자인 1 · 브랜드 상표 1",
+            "proposed": true, "current": "0", "cycle": "월" }
+        ]
+      }]
+    },
+    {
+      "no": "④", "kind": "공통", "title": "사업기간·사업비 관리",
+      "goal": "KGI · 11월 30일 사업종료 내 전액 집행 및 성과 확정",
+      "csfs": [{
+        "name": "CSF-6\n사업기간 내 마감 관리",
+        "kpis": [
+          { "name": "사업비 집행률 (총 11,000천원)", "type": "R", "unit": "%",
+            "target": "11월 내 100", "source": "계획서", "current": "집행 진행 중", "cycle": "월" },
+          { "name": "소모품비·재료비 집행 (6,600천원)", "type": "S", "unit": "천원",
+            "target": "6,600", "target_note": "10월 말까지", "source": "계획서", "current": "—", "cycle": "월" },
+          { "name": "외주용역비 집행 (3,300천원)", "type": "S", "unit": "천원",
+            "target": "3,300", "target_note": "10월 완료", "source": "계획서", "current": "추진 중", "cycle": "월" },
+          { "name": "지급수수료 집행 (1,100천원 · 박람회 550 × 2회)", "type": "S", "unit": "천원",
+            "target": "1,100", "target_note": "11월 이전 개최 행사", "source": "계획서",
+            "current": "12월 행사만 검토됨 — 재편성 필요", "cycle": "월" },
+          { "name": "증빙·성과보고 자료 정리 완료", "type": "S", "unit": "건",
+            "target": "11월 말 1식", "source": "운영 필수", "current": "—", "cycle": "월" }
+        ]
+      }]
+    }
+  ],
+
+  "linkage": {
+    "chain_title": "매출 KGI 130,000천원의 산출 체인",
+    "chain": [
+      {
+        "channel": "ⓐ 기관·학교 납품<br><small style=\"font-weight:400;color:var(--ink-3)\">R1 · 95,000천원</small>",
+        "steps": [
+          { "leading": "<b class='code'>S1</b> 견적 발송 10건/월<br><b class='code'>S2</b> 수주 전환율 30%<br><b class='code'>R4</b> 거래처당 5,000천원",
+            "calc": "10건 × 30% = <b>월 3건</b><br>3건 × 5,000천원 = 15,000천원/월<br>× 3개월 = <b>45,000천원</b> <span style=\"color:var(--ink-3)\">(신규분)</span>",
+            "result": "R2 신규 15곳<br>45,000천원", "ok": true },
+          { "leading": "<b class='code'>R3</b> 기존 거래처 재구매율 60%<br><small style=\"color:var(--ink-3)\">기존 22곳 기준</small>",
+            "calc": "22곳 × 60% = <b>13곳</b><br>13곳 × 3,846천원 = <b>50,000천원</b> <span style=\"color:var(--ink-3)\">(기존분)</span>",
+            "result": "50,000천원", "ok": true }
+        ]
+      },
+      {
+        "channel": "ⓑ 체험 운영<br><small style=\"font-weight:400;color:var(--ink-3)\">R7 · 15,000천원</small>",
+        "steps": [
+          { "leading": "<b class='code'>R5</b> 운영 회차 15회<br><b class='code'>R6</b> 회차당 25명<br><b class='code'>S3</b> 체험→구매 전환 15%",
+            "calc": "15회 × 25명 = <b>375명</b><br>375명 × 40천원 = <b>15,000천원</b><br><span style=\"color:var(--ink-3)\">375명 × 15% ≈ 56명 → 채널 ⓒ로 이전</span>",
+            "result": "15,000천원", "ok": true }
+        ]
+      },
+      {
+        "channel": "ⓒ 온라인 판매<br><small style=\"font-weight:400;color:var(--ink-3)\">R8 · 20,000천원</small>",
+        "steps": [
+          { "leading": "<b class='code'>S4</b> 자사몰 오픈(9월 중순)<br><b class='code'>S5</b> UV 2,000 × 전환 2%",
+            "calc": "2,000 × 2% = 자사몰 40건<br>+ 기존채널 150건 = <b>190건/월</b><br>190건 × 35천원 × 3개월 = <b>20,000천원</b>",
+            "result": "20,000천원", "ok": true }
+        ]
+      }
+    ],
+    "chain_total": {
+      "text": "<b>95,000 + 15,000 + 20,000 = 130,000천원</b> — 8/31 누적 120,000천원과 합해 <b>KGI 250,000천원</b>",
+      "value": "130,000천원", "ok": true
+    },
+    "paths": [
+      { "leading": "<b class='code'>S6</b> 시장조사<br><b class='code'>S7</b> 디자인 기획",
+        "path": "<b class='code'>S8</b> 시제품 2종 → <b class='code'>S9</b> 리드타임 3개월",
+        "result": "<b class='code'>R10</b> 신제품 출시 1종",
+        "check": "후보 선정 기준이 실제 수요와 어긋났거나, 조립 난이도가 체험용으로 과한 경우" },
+      { "leading": "<b class='code'>S10</b><br>인증 시험 접수<br><small style=\"font-weight:400;color:var(--ink-3)\">10월 초 마감</small>",
+        "path": "접수 → 시험 6주 → <b class='code'>R11</b> 안전확인 완료",
+        "result": "<b class='code'>R10</b> 출시의 <b>선결조건</b>",
+        "check": "접수 시점이 늦으면 결과가 아니라 <b>사업기간 자체</b>가 제약 — 만회 불가" },
+      { "leading": "<b class='code'>S11~S14</b><br>항목별 사업비 집행",
+        "path": "소모품 6,600 + 외주 3,300 + 수수료 1,100 → 증빙 정리",
+        "result": "<b class='code'>R13</b> 집행률 100%<br><small style=\"color:var(--ink-3)\">11월 30일 마감</small>",
+        "check": "집행률 미달은 성과가 아니라 <b>반납·감액 사유</b> — 매출 KPI와 독립적으로 관리" }
+    ]
+  },
+
+  "schedule": [
+    { "period": "9월", "target": "43,333천원<br><small style=\"color:var(--ink-3)\">누적 163,333</small>",
+      "musts": "자사몰 오픈(중순) · 신규 KIT 디자인·규격 확정 · 인증 시험 서류 확정 · <b>11월 이전 개최 박람회 2건 확정</b> · 주간 KPI 기록 착수",
+      "risk": { "level": "warn", "label": "박람회 대체 편성" } },
+    { "period": "10월", "target": "43,333천원<br><small style=\"color:var(--ink-3)\">누적 206,667</small>",
+      "musts": "홍보 콘텐츠 완료(외주비 3,300천원 집행) · <b>인증 시험 접수 마감</b> · 시제품 제작 완료 · 소모품비 6,600천원 집행 완료",
+      "risk": { "level": "warn", "label": "인증 접수 시한" } },
+    { "period": "11월", "target": "43,334천원<br><small style=\"color:var(--ink-3)\">누적 250,000</small>",
+      "musts": "신제품 출시 · 안전확인 완료 · 디자인등록·상표 출원 · <b>사업비 11,000천원 전액 집행</b> · 증빙·성과보고 자료 정리",
+      "risk": { "level": "warn", "label": "매출 마감" } },
+    { "period": "12월~<br><small style=\"font-weight:400;color:var(--ink-3)\">사업기간 밖</small>", "target": "—",
+      "musts": "박람회 자체예산 참가 · 신제품 출시 후 3개월 판매 추적 · 사후 성과 관리",
+      "risk": { "level": "todo", "label": "사업비 집행 불가" }, "out_of_period": true }
+  ],
+
+  "dashboard": [
+    { "code": "KGI", "kpi": "연매출 (누적)", "target": "250,000천원", "current": "120,000천원 (48%)",
+      "state": { "level": "warn", "label": "잔여 130,000 / 3개월" } },
+    { "code": "KGI", "kpi": "월 매출", "target": "43,333천원/월 (9~11월 필요치)", "current": "15,000천원/월",
+      "state": { "level": "warn", "label": "2.9배 필요" } },
+    { "code": "R2", "kpi": "신규 거래처 수", "target": "15곳", "current": "8곳+",
+      "state": { "level": "ok", "label": "순항" } },
+    { "code": "S2", "kpi": "견적 → 수주 전환율", "target": "30%", "current": "미측정",
+      "state": { "level": "todo", "label": "측정체계 구축 필요" } },
+    { "code": "R5", "kpi": "체험 프로그램 운영 회차", "target": "잔여 15회", "current": "미집계",
+      "state": { "level": "todo", "label": "집계 시작" } },
+    { "code": "S4", "kpi": "자사몰 오픈", "target": "9월 중순", "current": "구축 중",
+      "state": { "level": "ok", "label": "일정 준수 중" } },
+    { "code": "S8", "kpi": "신제품 시제품 완료", "target": "2종", "current": "규격 검토 중",
+      "state": { "level": "ok", "label": "진행 중" } },
+    { "code": "R11", "kpi": "신제품 안전인증 완료", "target": "신규 전 품목", "current": "서류 검토 중",
+      "state": { "level": "ok", "label": "진행 중" } },
+    { "code": "R13", "kpi": "사업비 집행률 (11,000천원)", "target": "11월 내 100%", "current": "집행 진행 중",
+      "state": { "level": "warn", "label": "11월 마감" } }
+  ],
+
+  "comments": [
+    { "title": "사업기간이 11월 종료 — 잔여는 4개월이 아니라 3개월이다",
+      "body": "목표 250,000천원 대비 잔여 130,000천원을 9·10·11월 안에 채워야 하므로 필요 월평균은 43,333천원, 기존 실적의 <b>약 2.9배</b>다. 12월 성수기 매출은 목표 달성에 잡히지 않는다. 사업비 11,000천원도 11월 내 전액 집행·증빙이 끝나야 한다." },
+    { "title": "12월 개최 박람회는 사업기간 밖 — 지급수수료 집행이 막힌다",
+      "body": "사업비 지급수수료 1,100천원(550천원 × 2회)은 박람회 참가비 항목인데, 현재 검토된 유일한 행사가 12월이라 사업기간 종료 후다. 9월 중 <b>11월 이전 개최 행사 2건</b>으로 재편성하거나, 해당 예산을 다른 가능 항목으로 변경 신청해야 한다." },
+    { "title": "매출 KGI의 채널 배분을 새로 잡았다 — 확인이 필요하다",
+      "body": "원자료에는 단일 목표만 있어 어느 채널이 부진한지 진단할 수 없었다. 잔여 130,000천원을 <b>납품 95,000 · 체험 15,000 · 온라인 20,000천원</b>으로 나누고 선행지표 목표와 산술적으로 맞물리는지 검산했다. 온라인 비중을 낮춘 것은 기존 누적 실적에 비춰 3개월 40,000천원이 과도하기 때문이다." },
+    { "title": "선행지표 측정체계가 없다",
+      "body": "견적 발송·수주 전환율, 체험 회차·참가자 수, 자사몰 방문·전환율은 현재 집계되지 않는다. 남은 기간이 3개월뿐이므로 스프레드시트 수준의 주간 기록이라도 <b>9월 첫 주</b>에 시작해야 한다." },
+    { "title": "인증은 마감 역산으로 관리할 것",
+      "body": "안전확인 시험에 통상 6주가 걸리므로 <b>10월 초까지 접수</b>하지 않으면 사업기간 내 완료가 불가능하다. 이 항목은 만회가 되지 않는 유형이므로 9월 중 서류를 확정한다." }
+  ]
+}
